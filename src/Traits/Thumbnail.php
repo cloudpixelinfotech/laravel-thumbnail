@@ -1,6 +1,6 @@
 <?php
 
-namespace Pixel\Thumbnail\Traits;
+namespace CloudPixel\Thumbnail\Traits;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;

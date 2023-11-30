@@ -1,6 +1,6 @@
 <?php
 
-namespace Pixel\Thumbnail;
+namespace CloudPixel\Thumbnail;
 
 use Illuminate\Support\ServiceProvider;
 
