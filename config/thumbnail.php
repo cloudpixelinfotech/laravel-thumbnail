@@ -7,7 +7,7 @@ return [
     |  Thumbnail Feature
     |--------------------------------------------------------------------------
     |
-    | This option defines whether to use Package's Thumbnail feature or not
+    | This option defines whether to use the Package's Thumbnail feature or not
     | Default option is true
     |
     */
@@ -18,7 +18,7 @@ return [
     | Thumbnail Qualities
     |--------------------------------------------------------------------------
     |
-    | These options are default post image and its thumbnail quality
+    | These options are the default post image and its thumbnail quality
     |
     |
     */
@@ -30,7 +30,7 @@ return [
     | Default Image Fit Size
     |--------------------------------------------------------------------------
     |
-    | These options is default post imahe height and width fit size
+    | These options are the default post image height and width fit size
     |
     |
     */
@@ -53,7 +53,7 @@ return [
             /**
              * Store the generated images here.
              *
-             * Note: Every preset needs an unique path.
+             * Note: Every preset needs a unique path.
              */
             'destination' => ['disk' => 'public', 'path' => 'uploads'],
             'thumbnails' => [
