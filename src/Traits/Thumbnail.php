@@ -13,29 +13,25 @@ trait Thumbnail
     public function makeThumbnail($fieldname = 'image', $preset = 'default', $custom = [])
     {
         if (! empty(request()->$fieldname) || $custom['image']) {
-            /* ------------------------------------------------------------------- */
-
+            
             $image_file = $custom['image'] ?? request()->file($fieldname); // Retriving Image File
-            $extension = $this->image_info($image_file)->extension; //Retriving Image extension
-            $imageStoreNameOnly = $this->image_info($image_file)->imageStoreNameOnly; //Making Image Store name
+            $extension = $this->image_info($image_file)->extension; // Retriving Image extension
+            $imageStoreNameOnly = $this->image_info($image_file)->imageStoreNameOnly; // Making Image Store name
 
-            /* ------------------------------------------------------------------- */
-
-            /* ----------------------------------------Parent Image Upload----------------------------------------- */
-            $this->uploadImage($fieldname, $preset, $custom); // Upload Parent Image
-            /* --------------------------------------------------------------------------------------------- */
+            
+            // Parent/Main Image Upload
+            $this->uploadImage($fieldname, $preset, $custom); // Upload Parent/Main Image
+            
             if (config('thumbnail.thumbnail', true)) {
                 $thumbnails = false;
                 $thumbnails = $custom['thumbnails'] ?? config('thumbnail.thumbnails') ?? false; // Grab Thumbnails
                 $storage = $custom['storage'] ?? config('thumbnail.presets.' . $preset . '.destination.path', 'uploads') ?? false; // Grab Storage Info
                 if ($thumbnails) {
-                    /* -----------------------------------------Custom Thumbnails------------------------------------------------- */
+                    // Custom Thumbnails
                     $this->makeCustomThumbnails($image_file, $imageStoreNameOnly, $extension, $storage, $thumbnails);
-                /* -------------------------------------------------------------------------------------------------- */
                 } else {
-                    /* ---------------------------------------Default Thumbnails--------------------------------------- */
+                    // Default Thumbnails
                     $this->makeDefaultThumbnails($image_file, $extension, $storage, $imageStoreNameOnly, $preset);
-                    /* ------------------------------------------------------------------------------------------------ */
                 }
             }
         }
@@ -47,8 +43,8 @@ trait Thumbnail
         $image = $image_file->storeAs($location, $name, config('thumbnail.presets.' . $preset . '.destination.disk', 'public')); // Thumbnail Storage Information
         $img = Image::cache(function ($cached_img) use ($image_file, $width, $height) {
             return $cached_img->make($image_file->getRealPath())->fit($width, $height);
-        }, config('thumbnail.image_cached_time', 10), true); //Storing Thumbnail
-        $img->save(Storage::disk(config('thumbnail.presets.' . $preset . '.destination.disk', 'public'))->path($image), $quality); //Storing Thumbnail
+        }, config('thumbnail.image_cached_time', 10), true); // Storing Thumbnail
+        $img->save(Storage::disk(config('thumbnail.presets.' . $preset . '.destination.disk', 'public'))->path($image), $quality); // Storing Thumbnail
     }
 
     // Make Custom Thumbnail
@@ -86,19 +82,17 @@ trait Thumbnail
                 );
             }
         }
-
-        /* ------------------------------------------------------------------------------------- */
     }
 
-    /* Image Upload Process Info */
+    // Image Upload Process Info
     private function image_info($image_file)
     {
-        $filenamewithextension = $image_file->getClientOriginalName(); //Retriving Full Image Name
-        $raw_filename = pathinfo($filenamewithextension, PATHINFO_FILENAME); //Retriving Image Raw Filename only
+        $filenamewithextension = $image_file->getClientOriginalName(); // Retriving Full Image Name
+        $raw_filename = pathinfo($filenamewithextension, PATHINFO_FILENAME); // Retriving Image Raw Filename only
         $filename = $this->validImageName($raw_filename); // Retrive Filename
-        $extension = $image_file->getClientOriginalExtension(); //Retriving Image extension
-        $imageStoreNameOnly = $filename.'-'.time(); //Making Image Store name
-        $imageStoreName = $filename.'-'.time().'.'.$extension; //Making Image Store name
+        $extension = $image_file->getClientOriginalExtension(); // Retriving Image extension
+        $imageStoreNameOnly = $filename.'-'.time(); // Making Image Store name
+        $imageStoreName = $filename.'-'.time().'.'.$extension; // Making Image Store name
 
         $image_info['filenamewithextension'] = $filenamewithextension;
         $image_info['raw_filename'] = $raw_filename;
@@ -124,18 +118,18 @@ trait Thumbnail
         }
 
         $image = Image::cache(function ($cached_img) use ($image_file, $custom) {
-            return $cached_img->make($image_file->getRealPath())->fit($custom['width'] ?? config('thumbnail.img_width', 1000), $custom['height'] ?? config('thumbnail.img_height', 800)); //Parent Image Interventing
+            return $cached_img->make($image_file->getRealPath())->fit($custom['width'] ?? config('thumbnail.img_width', 1000), $custom['height'] ?? config('thumbnail.img_height', 800)); // Parent/Main Image Interventing
         }, config('thumbnail.image_cached_time', 10), true);
-        $image->save(Storage::disk(config('thumbnail.presets.' . $preset . '.destination.disk'))->path($storage_path . '/' . $this->getRawOriginal($fieldname)), $custom['quality'] ?? config('thumbnail.image_quality', 80)); // Parent Image Locating Save
+        $image->save(Storage::disk(config('thumbnail.presets.' . $preset . '.destination.disk'))->path($storage_path . '/' . $this->getRawOriginal($fieldname)), $custom['quality'] ?? config('thumbnail.image_quality', 80)); // Parent/Main Image Locating Save
     }
 
     // Thumbnail Path
-    public function thumbnail($fieldname = 'image', $preset = 'default', $size = null, $byLocation = false)
+    public function thumbnail($fieldname = 'image', $preset = 'default', $size = null)
     {
-        return $this->imageDetail($fieldname, $preset, $size, $byLocation)->path;
+        return $this->imageDetail($fieldname, $preset, $size)->path;
     }
 
-    /* Checking Image Existance */
+    // Checking Image Existance
     private function imageExists($image)
     {
         return file_exists($image->getRealPath());
@@ -153,8 +147,8 @@ trait Thumbnail
         return $this->hasThumbnail($fieldname, $size) ? $this->imageDetail($fieldname, $size)->property->thumbnail_count : 0;
     }
 
-    /* Image Details */
-    public function imageDetail($fieldname = 'image', $preset = 'default', $size = null, $byLocation = false)
+    // Image Details
+    public function imageDetail($fieldname = 'image', $preset = 'default', $size = null)
     {
         $image = $this->getRawOriginal($fieldname);
         $extension = \File::extension($image);
