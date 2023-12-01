@@ -183,7 +183,7 @@ trait Thumbnail
             'name'      => $name,
             'fullname'  => $image_fullname,
             'extension' => $extension,
-            'path'      => $path . DIRECTORY_SEPARATOR . $image_fullname,
+            'path'      => $path . str_replace('\\', '/', DIRECTORY_SEPARATOR) . $image_fullname,
             'directory' => $disk_path->path($upload_path),
             'location'  => $disk_path->path($upload_path . DIRECTORY_SEPARATOR . $image_fullname),
             'property'  => $images_property,
